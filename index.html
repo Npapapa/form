@@ -1,54 +1,57 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Bốc Thăm Trúng Thưởng</title>
+  <title>Bốc thăm trúng thưởng</title>
 </head>
 <body>
-  <h2>Chương trình bốc thăm</h2>
-  <form id="raffleForm">
-    <label>Giá trị đơn hàng (VND):</label><br>
-    <input type="number" id="orderValue" required><br>
+  <h2>Chương trình bốc thăm trúng thưởng</h2>
+  <form id="luckyForm">
     <label>Họ và tên:</label><br>
-    <input type="text" id="name" required><br>
-    <label>Địa chỉ (quận):</label><br>
-    <input type="text" id="district" required><br>
+    <input type="text" name="name" required><br>
+    <label>Quận:</label><br>
+    <input type="text" name="district" required><br>
     <label>Số điện thoại:</label><br>
-    <input type="text" id="phone" required><br><br>
+    <input type="text" name="phone" required><br>
+    <label>Mã đơn hàng:</label><br>
+    <input type="text" name="orderId" required><br>
+    <label>Giá trị đơn hàng (VND):</label><br>
+    <input type="number" name="orderValue" required><br><br>
     <button type="submit">Tham gia</button>
   </form>
-  <p id="result"></p>
+
+  <div id="result"></div>
 
   <script>
-    const prizes = {
-      "Lược trải lông": 2,
-      "Đồ chơi": 4,
-      "Pate": 10,
-      "Creamy treat": 40
-    };
-
-    document.getElementById("raffleForm").addEventListener("submit", async (e) => {
+    document.getElementById("luckyForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const orderValue = parseInt(document.getElementById("orderValue").value);
+      const form = e.target;
+      const orderValue = parseInt(form.orderValue.value, 10);
       if (orderValue < 200000) {
-        alert("Đơn hàng chưa đủ điều kiện.");
+        document.getElementById("result").innerText = "Đơn hàng chưa đủ điều kiện.";
         return;
       }
 
-      const formData = {
-        name: document.getElementById("name").value,
-        district: document.getElementById("district").value,
-        phone: document.getElementById("phone").value,
-        orderValue
+      const data = {
+        name: form.name.value,
+        district: form.district.value,
+        phone: form.phone.value,
+        orderId: form.orderId.value,
+        orderValue: orderValue
       };
 
-      const response = await fetch("https://script.google.com/macros/s/AKfycbwQFRSppa7rAbyvJXM7mARnsvAUmTyXrlTjMPng9nJPBUnwR_jnWwVcnhAgYaqPLq3J/exec", {
+      fetch("PASTE_YOUR_WEB_APP_URL_HERE", {
         method: "POST",
-        body: JSON.stringify(formData)
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.json())
+      .then(res => {
+        document.getElementById("result").innerText = "Bạn nhận được: " + res.prize;
+      })
+      .catch(() => {
+        document.getElementById("result").innerText = "Có lỗi xảy ra. Vui lòng thử lại.";
       });
-
-      const result = await response.json();
-      document.getElementById("result").innerText = "Bạn trúng: " + result.prize;
     });
   </script>
 </body>
